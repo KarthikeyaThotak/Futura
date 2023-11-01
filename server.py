@@ -1,12 +1,24 @@
 from typing import Union
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
 import openai
 
 app = FastAPI()
 
-
+app.add_middleware(
+CORSMiddleware,
+allow_origins=["*"], # Allows all origins
+allow_credentials=True,
+allow_methods=["*"], # Allows all methods
+allow_headers=["*"], # Allows all headers
+)
 
 openai.api_key=""
+
+@app.get("/")
+async def main():
+    return {"message":"hello world"}
 
 @app.get("/Education")
 def Education(edu: str):
@@ -39,7 +51,8 @@ def Certifications(degree: str):
         answer = response.choices[0].text.strip()
         return answer
     question = "Top 3 certifications that you need in the " + degree + " field, certification names only."
-    return ask_openai(question)
+    answer = ask_openai(question)
+    return answer
 
 
 @app.get("/Experiences")
